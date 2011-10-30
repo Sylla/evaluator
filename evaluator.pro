@@ -20,16 +20,18 @@ SOURCES += main.cpp \
     evaluation.cpp \
     packetmanagement.cpp \
     statistic.cpp \
-    rtsp.cpp \
+    protocol_rtsp.cpp \
     textui.cpp \
-    protocolhandler.cpp
+    protocolhandler.cpp \
+    protocol_icmp.cpp
 
 HEADERS += \
     pcap_class.h \
     evaluation.h \
     packetmanagement.h \
     statistic.h \
-    rtsp.h \
+    protocol_rtsp.h \
     textui.h \
-    protocolhandler.h
+    protocolhandler.h \
+    protocol_icmp.h
 LIBS    += -lpcap

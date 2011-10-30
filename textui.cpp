@@ -18,6 +18,7 @@ void TextUI_::run()
         std::cout << "Amir Hossein Mandegar<amandegar@gmail.com>"<<std::endl;
         std::cout << "-------------------------------------------------------------------------------------"<<std::endl;
         std::cout << " total captured packet: " << statistic->getCounter(CNT_TOTAL)<<std::endl;
+        std::cout << " total ICMP  packet: " << statistic->getCounter(CNT_ICMP)<<std::endl;
         std::cout << " total UDP  packet: " << statistic->getCounter(CNT_UDP)<<std::endl;
         std::cout << " total TCP  packet: " << statistic->getCounter(CNT_TCP)<<std::endl;
         std::cout << " total RTSP packet: " << statistic->getCounter(CNT_RTSP)<<std::endl;

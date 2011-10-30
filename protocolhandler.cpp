@@ -41,6 +41,9 @@ int protocolHandler_::packetInjection(pcap_pkthdr *header_, const u_char *packet
         payload = packet + ETHER_HDR_LEN + (ntohs(ip_header->ihl) >> 8) * 4 + sizeof(struct udphdr);
 //        std::cout <<(ntohs(ip_header->protocol) >> 8 )<< "-"<< ntohs(udp_header->source)<<"-"<<(ntohs(ip_header->ihl) >> 8)<< "-"<< ntohs(udp_header->dest)<< std::endl;
         return check((ntohs(ip_header->protocol) >> 8 ) , ntohs(udp_header->source), ntohs(udp_header->dest));
+    } else if ((ntohs(ip_header->protocol)>> 8) == IPPROTO_ICMP)
+    {
+        return check((ntohs(ip_header->protocol) >> 8 ) , 0, 0  );
     }
     return false;
 }
