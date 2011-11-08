@@ -23,7 +23,9 @@ SOURCES += main.cpp \
     protocol_rtsp.cpp \
     textui.cpp \
     protocolhandler.cpp \
-    protocol_icmp.cpp
+    protocol_icmp.cpp \
+    protocol_rtp.cpp \
+    protocol_rtcp.cpp
 
 HEADERS += \
     pcap_class.h \
@@ -33,5 +35,7 @@ HEADERS += \
     protocol_rtsp.h \
     textui.h \
     protocolhandler.h \
-    protocol_icmp.h
+    protocol_icmp.h \
+    protocol_rtp.h \
+    protocol_rtcp.h
 LIBS    += -lpcap

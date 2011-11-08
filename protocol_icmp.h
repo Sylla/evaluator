@@ -8,7 +8,7 @@ class protocol_icmp : public protocolHandler_
 {
 public:
     protocol_icmp(statistic_ *stat);
-    int check(u_int16_t protocol, u_int16_t sport, u_int16_t dport);
+    int check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const u_char *payload, unsigned int payload_length);
     int process();
 
 };

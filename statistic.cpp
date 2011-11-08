@@ -5,12 +5,19 @@ statistic_::statistic_(): Level(CRITICAL_MODE)
     memset((void *) cnt, 0, sizeof(cnt));
 }
 //-----------------------------------------------------------------------------
-
 void
 statistic_::incrementCounter(unsigned short type)
 {
     mutex.lock();
     ++(cnt[type]);
+    mutex.unlock();
+}
+//-----------------------------------------------------------------------------
+void
+statistic_::decrementCounter(unsigned short type)
+{
+    mutex.lock();
+    --(cnt[type]);
     mutex.unlock();
 }
 //-----------------------------------------------------------------------------

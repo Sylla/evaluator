@@ -50,6 +50,7 @@ private:
     char *errbuf;
     statistic_ *statistic;
 
+    void print_packet(pcap_pkthdr *header_, const u_char *packet_);
 };
 
 #endif // PCAP_CLASS_H
