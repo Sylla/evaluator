@@ -58,7 +58,14 @@ packetManagement_::callInstances(u_int16_t protocol, u_int16_t sport, u_int16_t 
          protocolHandlerIterator != protocolHandler.end();
          ++protocolHandlerIterator)
     {
-        (*protocolHandlerIterator)->check(protocol, sport, dport, payload, payload_length);
+//        std::cout << *protocolHandlerIterator << std::endl;
+        try{
+            (*protocolHandlerIterator)->check(protocol, sport, dport, payload, payload_length);
+        }
+        catch(...)
+        {
+            std::cout << "Exception!" << std::endl;
+        }
     }
     return true;
 }

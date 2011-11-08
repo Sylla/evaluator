@@ -53,10 +53,10 @@ protocol_rtsp::check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const
                     {
                         delete sessionHandlerIterator.value();
                         protocolHandler->remove(sessionHandlerIterator.value());
-                        sessionHandler.remove(ports.session, sessionHandlerIterator.value());
                     }
                     ++sessionHandlerIterator;
                 }
+                sessionHandler.remove(ports.session);
             }
         }
     }
