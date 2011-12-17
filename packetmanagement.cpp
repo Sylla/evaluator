@@ -26,6 +26,7 @@ packetManagement_::~packetManagement_()
     {
         pthandler = *protocolHandlerIterator;
         delete pthandler;
+        ++protocolHandlerIterator;
     }
     protocolHandler.clear();
 }
@@ -59,13 +60,14 @@ packetManagement_::callInstances(u_int16_t protocol, u_int16_t sport, u_int16_t 
          ++protocolHandlerIterator)
     {
 //        std::cout << *protocolHandlerIterator << std::endl;
-        try{
+//        try{
+
             (*protocolHandlerIterator)->check(protocol, sport, dport, payload, payload_length);
-        }
-        catch(...)
-        {
-            std::cout << "Exception!" << std::endl;
-        }
+//        }
+//        catch(...)
+//        {
+//            std::cout << "Exception!" << std::endl;
+//        }
     }
     return true;
 }
@@ -81,8 +83,6 @@ packetManagement_::packetProcess(pcap_pkthdr *header_, const u_char *packet_)
         return false;
 
     iphdr *ip_header = (iphdr *)(packet_ + sizeof(struct ether_header));
-
-//print_packet(header_, packet_);
 
     if (ip_header->protocol == IPPROTO_TCP)
     {

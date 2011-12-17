@@ -26,7 +26,6 @@ protocol_rtsp::check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const
     if( protocol == IPPROTO_TCP && (sport == source_port || dport == source_port))
     {
         statistic->incrementCounter(CNT_RTSP);
-        statistic->setCounter(CNT_SESSION, sessionHandler.size());
 
         if (process(QString((char*)payload), NULL, NULL))
         {
@@ -51,14 +50,23 @@ protocol_rtsp::check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const
                 {
                     if (sessionHandlerIterator.key() == ports.session)
                     {
-                        delete sessionHandlerIterator.value();
-                        protocolHandler->remove(sessionHandlerIterator.value());
+//                        std::cout << *sessionHandlerIterator << std::endl;
+//                        try {
+
+                            delete sessionHandlerIterator.value();
+                            protocolHandler->remove(sessionHandlerIterator.value());
+//                        }
+//                        catch(...)
+//                        {
+//                            std::cout<<"Exception occure(Delete class - TEARDOWN receive but packet remains)!"<<std::endl;
+//                        }
                     }
                     ++sessionHandlerIterator;
                 }
                 sessionHandler.remove(ports.session);
             }
         }
+        statistic->setCounter(CNT_SESSION, sessionHandler.size());
     }
     return false;
 }
