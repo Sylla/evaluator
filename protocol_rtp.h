@@ -1,27 +1,9 @@
 #ifndef PROTOCOL_RTP_H
 #define PROTOCOL_RTP_H
 #include "protocolhandler.h"
+#include "rfc2250.h"
+#include <ccrtp/rtppkt.h>
 #include <QFile>
-
-struct RFC2250H
-{
- u_int16_t temporal_reference;
- u_char    picture_coding_type;
- u_char    vector_code_bits; // FBV,BFC,FFV,FFC from RFC 2250, sec. 3.4
-// u_int8_t MBZ:5;
-// u_int8_t T:1;
-// u_int16_t TemporalRefrence:10;
-// u_int8_t AN:1;
-// u_int8_t NewPictureHeader:1;
-// u_int8_t SequenceHeader:1;
-// bool     BeginningofSlice:1;
-// bool     EndofSlice:1;
-// u_int8_t PictureType:3;
-// u_int8_t FBV:1;
-// u_int8_t BFC:3;
-// u_int8_t FFV:1;
-// u_int8_t FFC:3;
-};
 
 class protocol_rtp : public protocolHandler_
 {

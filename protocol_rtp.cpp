@@ -18,11 +18,21 @@ protocol_rtp::check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const 
        (sport == source_port && dport == destination_port) ||
        (dport == source_port && sport == destination_port))
     {
-        RFC2250H *rfc2250_h = (RFC2250H *)(payload + 12);
+        RTPFixedHeader *rtpH = (RTPFixedHeader *)payload;
+        RFC2250H *rfc2250_h = (RFC2250H *)(payload + sizeof(RTPFixedHeader));
         statistic->incrementCounter(CNT_RTP);
+        std::cout<<ntohs(rtpH->sequence)<<"-"<<
+                   ntohl(rtpH->timestamp)<<"-"<<
+                   (int)rtpH->payload<<"-"<<
+                   std::endl;
+        std::cout<<ntohs(rtpH->sequence)<<"-"<<
+                   ntohl(rtpH->timestamp)<<"-"<<
+                   (int)rtpH->payload<<"-"<<
+                   std::endl;
+
         frameSize += payload_length - 8 - 12 - 4; // UDP, RTP and rfc2250 Header Length
-        if (rfc2250_h->picture_coding_type & 0x08)
-            process((rfc2250_h->picture_coding_type & 0x07), (ntohs(rfc2250_h->temporal_reference) & 0x03ff));
+        if (rfc2250_h->end_of_slice)
+            process(rfc2250_h->picture_type, rfc2250_h->temporal_refrence);
     }
 }
 //-------------------------------------------------------------------
