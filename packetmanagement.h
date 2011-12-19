@@ -9,7 +9,7 @@
 class packetManagement_ : public QThread
 {
 public:
-            packetManagement_(const char *dev_name, statistic_ *stat);
+            packetManagement_(const char *dev_name, const char *file_name, statistic_ *stat);
             ~packetManagement_();
     void    run();
 

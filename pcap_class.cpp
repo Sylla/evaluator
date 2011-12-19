@@ -2,18 +2,31 @@
 
 
 //-----------------------------------------------------------------------------
-pcap_class::pcap_class(const char *dev_name, statistic_ *stat)
+pcap_class::pcap_class(const char *dev_name, const char *file_name, statistic_ *stat)
 {
     //try catch shod be implement
     statistic = stat;
-    handle = pcap_open_live(dev_name, BUFSIZ, 1, -1, errbuf);
+
+    if (file_name != NULL)
+    {
+        handle = pcap_open_offline(file_name, errbuf);
+        RateControl = true;
+    }
+    else if (dev_name != NULL)
+    {
+        handle = pcap_open_live(dev_name, BUFSIZ, 1, -1, errbuf);
+        RateControl = false;
+    }
+
+
     if (handle == NULL)
     {
-        std::cerr << "Could not open device " << dev_name << " !!!" << std::endl;
-    } else
-    {
-        std::cout<<"Device "<< dev_name <<" has been opened." << std::endl;
+        std::cerr << "Could not open device!!!" << std::endl;
+        abort();
     }
+    else
+        std::cout<<"Device has been opened." << std::endl;
+
     start();
 }
 //-----------------------------------------------------------------------------
@@ -35,6 +48,8 @@ pcap_class::run()
     while(true)
     {
         packet_temp = pcap_next(handle, &pcap_packet.header);
+        if (RateControl)
+            usleep(20000);
         if (packet_temp != NULL)
         {
             mutex.lock();

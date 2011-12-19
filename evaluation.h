@@ -5,17 +5,16 @@
 #include "statistic.h"
 #include "textui.h"
 
-
 class evaluation
 {
 public:
-    evaluation(const char *netdev);
+    evaluation(int argc, char *argv[]);
     ~evaluation();
 
 private:
-    packetManagement_ packetManagement;
+    packetManagement_ *packetManagement;
     statistic_ statistic;
-    TextUI_ TextUI;
+    TextUI_ *TextUI;
 };
 
 #endif // EVALUATION_H

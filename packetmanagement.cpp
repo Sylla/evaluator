@@ -8,7 +8,7 @@
 #include <netinet/udp.h>
 
 
-packetManagement_::packetManagement_(const char *dev_name, statistic_ *stat) : capture(dev_name, stat)
+packetManagement_::packetManagement_(const char *dev_name, const char *file_name, statistic_ *stat) : capture(dev_name, file_name, stat)
 {
     statistic = stat;
 

@@ -27,7 +27,7 @@ public:
      * Constructor
      * @param dev_name network interface name
      */
-    pcap_class(const char *dev_name, statistic_ *stat);
+    pcap_class(const char *dev_name, const char *file_name, statistic_ *stat);
     ~pcap_class();
     /**
      * Run method is thread process capture loop
@@ -49,6 +49,7 @@ private:
     pcap_t *handle;
     char *errbuf;
     statistic_ *statistic;
+    bool RateControl;
 
     void print_packet(pcap_pkthdr *header_, const u_char *packet_);
 };

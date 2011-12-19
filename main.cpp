@@ -4,9 +4,6 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-
-    const char *netdev = argv[1];
-    evaluation eval_inst(netdev);
-
+    evaluation eval_inst(argc, argv);
     return a.exec();
 }
