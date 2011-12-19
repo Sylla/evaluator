@@ -12,7 +12,7 @@ void TextUI_::run()
 {
     while(true)
     {
-        sleep(1);
+        usleep(50000);
         system("clear");
         std::cout << "Video Quality Evaluation Program"<<std::endl;
         std::cout << "Amir Hossein Mandegar<amandegar@gmail.com>"<<std::endl;
@@ -29,6 +29,9 @@ void TextUI_::run()
         std::cout << " Registered Protocol instance: " << statistic->getCounter(CNT_PROTOCOL)<<std::endl;
         std::cout << " Registered Sessions by RTSP: " << statistic->getCounter(CNT_SESSION)<<std::endl;
         std::cout << " Queue length: " << statistic->getCounter(CNT_QUEUE_SIZE)<<std::endl;
+        std::cout << "----------------------------------------"<<std::endl;
+        std::cout << " Estimate Motion: " << statistic->getCounter(ESTIMATED_MOTION)<<std::endl;
+        std::cout << " Estimated Quality: " << statistic->getCounter(ESTIMATED_QUALITY)<<std::endl;
     }
 }
 //-----------------------------------------------------------------------------

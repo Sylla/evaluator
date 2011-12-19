@@ -31,13 +31,17 @@ public:
     int     check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const u_char *payload, unsigned int payload_length);
     int     process(__uint16_t fType, __uint16_t tempRef);
     void    calculateGOP(RTPFixedHeader *rtp, RFC2250H *rfc);
-    void    processLoss(RTPFixedHeader *rtp, RFC2250H *rfc);
+    void    lossDetection(RTPFixedHeader *rtp, RFC2250H *rfc);
+    void    qualityEstimation(RTPFixedHeader *rtp, RFC2250H *rfc);
+    void    motionEstimation(RTPFixedHeader *rtp, RFC2250H *rfc);
 private:
     QFile       rtpFile;
     __uint32_t  frameSize;
     u_int16_t   seqPrev, seqLoss;
     bool        lossOccur;
     GOP_eval_struct  GOP_eval;
+    u_int16_t   latestIframeSize;
+    double      estimatedMotion;
 };
 
 #endif // PROTOCOL_RTP_H

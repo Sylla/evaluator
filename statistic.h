@@ -7,8 +7,8 @@
 enum modes{SILENT_MODE, VERBOSE_MODE, DEBUG_MODE, CRITICAL_MODE};
 enum counter{CNT_QUEUE_SIZE, CNT_TOTAL_DQ, CNT_TOTAL_EQ, CNT_IP, CNT_ICMP,
              CNT_UDP, CNT_TCP, CNT_RTSP, CNT_RTP, CNT_RTCP,
-             CNT_PROTOCOL, CNT_SESSION,
-             counter_size=12};
+             CNT_PROTOCOL, CNT_SESSION,ESTIMATED_MOTION,ESTIMATED_QUALITY,
+             counter_size=14};
 
 class statistic_
 {
