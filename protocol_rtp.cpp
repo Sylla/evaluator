@@ -18,21 +18,34 @@ protocol_rtp::check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const 
        (sport == source_port && dport == destination_port) ||
        (dport == source_port && sport == destination_port))
     {
-        RTPFixedHeader *rtpH = (RTPFixedHeader *)payload;
-        RFC2250H *rfc2250_h = (RFC2250H *)(payload + sizeof(RTPFixedHeader));
         statistic->incrementCounter(CNT_RTP);
-        std::cout<<ntohs(rtpH->sequence)<<"-"<<
-                   ntohl(rtpH->timestamp)<<"-"<<
-                   (int)rtpH->payload<<"-"<<
-                   std::endl;
-        std::cout<<ntohs(rtpH->sequence)<<"-"<<
-                   ntohl(rtpH->timestamp)<<"-"<<
-                   (int)rtpH->payload<<"-"<<
-                   std::endl;
+        RTPFixedHeader *rtpH = (RTPFixedHeader *)payload;
 
-        frameSize += payload_length - 8 - 12 - 4; // UDP, RTP and rfc2250 Header Length
-        if (rfc2250_h->end_of_slice)
-            process(rfc2250_h->picture_type, rfc2250_h->temporal_refrence);
+        if (rtpH->payload != 32)
+            return 0;
+
+        RFC2250H *rfc2250_inst = (RFC2250H *)(payload + sizeof(RTPFixedHeader));
+
+        std::cout<<ntohs(rtpH->sequence)<<"-"<<seqPrev<<std::endl;
+
+        if (seqPrev != 0)
+        {
+            lossOccur = (ntohs(rtpH->sequence) - seqPrev > 1)?true:false;
+            seqLoss   = (lossOccur)?seqPrev:seqLoss;
+        }
+
+        // Calculate Number of P and B frame in GOP
+        if(!GOP_eval.valid)
+            calculateGOP(rtpH, rfc2250_inst);
+        else if(lossOccur)
+            processLoss(rtpH, rfc2250_inst);
+
+        frameSize += payload_length - sizeof(udphdr) - sizeof(RTPFixedHeader) - sizeof(RFC2250H);
+        if (rfc2250_inst->end_of_slice)
+            process(rfc2250_inst->picture_type, rfc2250_inst->temporal_refrence);
+
+
+        seqPrev = ntohs(rtpH->sequence);
     }
 }
 //-------------------------------------------------------------------
@@ -51,5 +64,38 @@ protocol_rtp::process(__uint16_t fType, __uint16_t tempRef)
     rtpOut << tmp + "\n";
     rtpOut.flush();
     frameSize = 0;
+}
+//-------------------------------------------------------------------
+void
+protocol_rtp::calculateGOP(RTPFixedHeader *rtp, RFC2250H *rfc)
+{
+    if (!GOP_eval.valid && !lossOccur)
+        if(GOP_eval.start)
+        {
+                switch(rfc->picture_type)
+                {
+                case I:
+                    if(GOP_eval.Ptimes !=0)
+                    {
+                        GOP_eval.valid = true;
+                        GOP_eval.start = false;
+                    }
+                    break;
+                case P:
+                    (rfc->end_of_slice)? ++GOP_eval.Ptimes:0;
+                    break;
+                case B:
+                    (rfc->end_of_slice)? ++GOP_eval.Btimes:0;
+                    break;
+                }
+                (GOP_eval.start)?++GOP_eval.seqTimes:0;
+        }else
+             GOP_eval.start = (rfc->picture_type == I)? true: false;
+}
+//-------------------------------------------------------------------
+void
+protocol_rtp::processLoss(RTPFixedHeader *rtp, RFC2250H *rfc)
+{
+    std::cout<<"ready for calculate loss effect";
 }
 //-------------------------------------------------------------------
