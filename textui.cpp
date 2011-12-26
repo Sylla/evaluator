@@ -30,8 +30,15 @@ void TextUI_::run()
         std::cout << " Registered Sessions by RTSP: " << statistic->getCounter(CNT_SESSION)<<std::endl;
         std::cout << " Queue length: " << statistic->getCounter(CNT_QUEUE_SIZE)<<std::endl;
         std::cout << "----------------------------------------"<<std::endl;
+        std::cout << " GOP Sequence: " << statistic->getCounter(GOP_SEQ)<<std::endl;
+        std::cout << " GOP P frame times: " << statistic->getCounter(GOP_P)<<std::endl;
+        std::cout << " GOP B frame times: " << statistic->getCounter(GOP_B)<<std::endl;
+        std::cout << "----------------------------------------"<<std::endl;
+        std::cout << " Loss Sequence(latest): " << statistic->getCounter(LOSS_SEQ)<<std::endl;
+        std::cout << " Estimated Loss: " << statistic->getCounter(ESTIMATED_LOSS)<<std::endl;
         std::cout << " Estimate Motion: " << statistic->getCounter(ESTIMATED_MOTION)<<std::endl;
         std::cout << " Estimated Quality: " << statistic->getCounter(ESTIMATED_QUALITY)<<std::endl;
+        std::cout << " Estimated Average Quality: " << statistic->getCounter(ESTIMATED_AVERAGE_QUALITY)<<std::endl;
     }
 }
 //-----------------------------------------------------------------------------

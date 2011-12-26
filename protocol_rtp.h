@@ -3,6 +3,7 @@
 #include "protocolhandler.h"
 #include "rfc2250.h"
 #include <netinet/udp.h>
+#include <math.h>
 #include <QFile>
 
 enum FT{I=1,P,B};
@@ -42,6 +43,8 @@ private:
     GOP_eval_struct  GOP_eval;
     u_int16_t   latestIframeSize;
     double      estimatedMotion;
+    double      estimatedLoss;
+    double      estimatedQuality;
 };
 
 #endif // PROTOCOL_RTP_H

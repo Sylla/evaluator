@@ -6,7 +6,7 @@ statistic_::statistic_(): Level(CRITICAL_MODE)
 }
 //-----------------------------------------------------------------------------
 void
-statistic_::incrementCounter(unsigned short type)
+statistic_::incrementCounter(unsigned short int type)
 {
     mutex.lock();
     ++(cnt[type]);
@@ -14,21 +14,21 @@ statistic_::incrementCounter(unsigned short type)
 }
 //-----------------------------------------------------------------------------
 void
-statistic_::decrementCounter(unsigned short type)
+statistic_::decrementCounter(unsigned short int type)
 {
     mutex.lock();
     --(cnt[type]);
     mutex.unlock();
 }
 //-----------------------------------------------------------------------------
-unsigned long int
-statistic_::getCounter(unsigned short type)
+double
+statistic_::getCounter(unsigned short int type)
 {
     return cnt[type];
 }
 //-----------------------------------------------------------------------------
-unsigned long int
-statistic_::setCounter(unsigned short type, unsigned long value)
+double
+statistic_::setCounter(unsigned short int type, double value)
 {
     return cnt[type]=value;
 }

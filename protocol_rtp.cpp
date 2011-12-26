@@ -2,7 +2,10 @@
 
 protocol_rtp::protocol_rtp(u_int16_t sport, u_int16_t dport,statistic_ *stat) : protocolHandler_(sport, dport, stat), rtpFile("RTP2250.log")
 {
+    seqLoss = 0;
     frameSize = 0;
+    estimatedLoss = 0;
+    estimatedQuality = 5;
     rtpFile.open(QIODevice::WriteOnly | QIODevice::Text);
 }
 //-------------------------------------------------------------------
@@ -35,12 +38,14 @@ protocol_rtp::check(u_int16_t protocol, u_int16_t sport, u_int16_t dport, const 
         if(!GOP_eval.valid)
             calculateGOP(rtpH, rfc2250_inst);
 
+        // Quality estimation
+        qualityEstimation(rtpH, rfc2250_inst);
+
         // Calculate size of each frame (single or fragmented)
         frameSize += payload_length - sizeof(udphdr) - sizeof(RTPFixedHeader) - sizeof(RFC2250H);
         if (rfc2250_inst->end_of_slice)         // Important section will call methods at the last packet of segmented frame
         {
             motionEstimation(rtpH, rfc2250_inst);
-            qualityEstimation(rtpH, rfc2250_inst);
 
             process(rfc2250_inst->picture_type, rfc2250_inst->temporal_refrence);
         }
@@ -57,6 +62,11 @@ protocol_rtp::process(__uint16_t fType, __uint16_t tempRef)
     QString tmp =  (fType==1? "I ":(fType==2?"P ":"B "));
             tmp += QString::number(tempRef) + " ";
             tmp += QString::number(frameSize) + " ";
+
+            tmp += QString::number(seqLoss) + " ";
+            tmp += QString::number(estimatedLoss) + " ";
+            tmp += QString::number(estimatedMotion) + " ";
+            tmp += QString::number(estimatedQuality) + " ";
     rtpOut << tmp + "\n";
     rtpOut.flush();
     frameSize = 0;
@@ -75,6 +85,9 @@ protocol_rtp::calculateGOP(RTPFixedHeader *rtp, RFC2250H *rfc)
                     {
                         GOP_eval.valid = true;
                         GOP_eval.start = false;
+                        statistic->setCounter(GOP_SEQ, GOP_eval.seqTimes);
+                        statistic->setCounter(GOP_P, GOP_eval.Ptimes);
+                        statistic->setCounter(GOP_B, GOP_eval.Btimes);
                     }
                     break;
                 case P:
@@ -92,17 +105,31 @@ protocol_rtp::calculateGOP(RTPFixedHeader *rtp, RFC2250H *rfc)
 void
 protocol_rtp::lossDetection(RTPFixedHeader *rtp, RFC2250H *rfc)
 {
-        lossOccur = (ntohs(rtp->sequence) - seqPrev > 1)?true:false;
-        seqLoss   = (lossOccur)?ntohs(rtp->sequence) - seqPrev:0;
-        this->qualityEstimation(rtp, rfc);
+        lossOccur = (ntohs(rtp->sequence) - seqPrev == 1)?false:true;
+        if (GOP_eval.valid)
+        {
+            if (lossOccur && (ntohs(rtp->sequence) - seqPrev) > 1 )
+            {
+                seqLoss = ntohs(rtp->sequence) - seqPrev;
+                statistic->setCounter(LOSS_SEQ, seqLoss);
+                statistic->setCounter(ESTIMATED_LOSS, estimatedLoss);
+            }else
+                seqLoss = 0;
+            //            estimatedLoss = pow( ((double)seqLoss/(GOP_eval.seqTimes * 3 )), 1.5);
+            //            estimatedLoss = estimatedLoss + pow( ((double)seqLoss/(GOP_eval.seqTimes)), 1.5);
+            estimatedLoss = (estimatedLoss + pow( ((double)seqLoss/(GOP_eval.seqTimes)), 1.5))/2;
+        }
+
 }
 //-------------------------------------------------------------------
 void
 protocol_rtp::qualityEstimation(RTPFixedHeader *rtp, RFC2250H *rfc)
 {
-    double quality = 0.0;
 
-    statistic->setCounter(ESTIMATED_QUALITY, quality*100);
+    double quality = 5.0 - tan(estimatedMotion) * estimatedLoss * 5;
+    estimatedQuality = (estimatedQuality + quality) / 2;
+    statistic->setCounter(ESTIMATED_QUALITY, quality);
+    statistic->setCounter(ESTIMATED_AVERAGE_QUALITY, estimatedQuality);
 }
 //-------------------------------------------------------------------
 void
