@@ -4,7 +4,7 @@
 evaluation::evaluation(int argc, char *argv[])
 {
     int c;
-    char optv[] = "f:n:t::";
+    char optv[] = "f:i:t::";
 
     bool TextUIenable = true;
     while ( (c = getopt(argc, argv, optv)) != -1)
@@ -14,7 +14,7 @@ evaluation::evaluation(int argc, char *argv[])
         case 'f':
             packetManagement = new packetManagement_(NULL, optarg, &statistic);
             break;
-        case 'n':
+        case 'i':
             packetManagement = new packetManagement_(optarg, NULL, &statistic);
             break;
         case 't':
