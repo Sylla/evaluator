@@ -6,6 +6,8 @@ protocol_rtp::protocol_rtp(u_int16_t sport, u_int16_t dport,statistic_ *stat) : 
     frameSize = 0;
     estimatedLoss = 0;
     estimatedQuality = 5;
+    qualitySum = 0;
+    qualityCount = 0;
     rtpFile.open(QIODevice::WriteOnly | QIODevice::Text);
 }
 //-------------------------------------------------------------------
@@ -115,9 +117,11 @@ protocol_rtp::lossDetection(RTPFixedHeader *rtp, RFC2250H *rfc)
                 statistic->setCounter(ESTIMATED_LOSS, estimatedLoss);
             }else
                 seqLoss = 0;
-            //            estimatedLoss = pow( ((double)seqLoss/(GOP_eval.seqTimes * 3 )), 1.5);
-            //            estimatedLoss = estimatedLoss + pow( ((double)seqLoss/(GOP_eval.seqTimes)), 1.5);
-            estimatedLoss = (estimatedLoss + pow( ((double)seqLoss/(GOP_eval.seqTimes)), 1.5))/2;
+//                estimatedLoss = ((double)seqLoss/GOP_eval.seqTimes);
+                estimatedLoss = log10((double)seqLoss/GOP_eval.seqTimes) + 2;
+//                estimatedLoss = ((double)seqLoss/(GOP_eval.seqTimes * 3 ));
+//                estimatedLoss = estimatedLoss + pow( ((double)seqLoss/(GOP_eval.seqTimes)), 1.5);
+//                estimatedLoss = (estimatedLoss + pow( ((double)seqLoss/(GOP_eval.seqTimes)), 1.5))/2;
         }
 
 }
@@ -126,8 +130,14 @@ void
 protocol_rtp::qualityEstimation(RTPFixedHeader *rtp, RFC2250H *rfc)
 {
 
-    double quality = 5.0 - tan(estimatedMotion) * estimatedLoss * 5;
-    estimatedQuality = (estimatedQuality + quality) / 2;
+//    double quality = tan(estimatedMotion) * estimatedLoss;
+    ++qualityCount;
+    double quality = tan(estimatedMotion) * estimatedLoss * 5;
+//    double quality = 5.0 - tan(estimatedMotion) * estimatedLoss * 5;
+    qualitySum += quality;
+    estimatedQuality = qualitySum / qualityCount;
+//    estimatedQuality = (estimatedQuality + quality) / 2;
+//    estimatedQuality = (estimatedQuality + abs(estimatedQuality - quality)) / 2;
     statistic->setCounter(ESTIMATED_QUALITY, quality);
     statistic->setCounter(ESTIMATED_AVERAGE_QUALITY, estimatedQuality);
 }

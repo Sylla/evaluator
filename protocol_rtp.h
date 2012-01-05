@@ -45,6 +45,9 @@ private:
     double      estimatedMotion;
     double      estimatedLoss;
     double      estimatedQuality;
+    double      qualitySum;
+    unsigned long qualityCount;
+    unsigned long lossCount;
 };
 
 #endif // PROTOCOL_RTP_H
